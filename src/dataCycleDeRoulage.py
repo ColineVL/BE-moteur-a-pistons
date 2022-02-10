@@ -3,3 +3,11 @@
 # pente [°] : pente de la route, en degrés
 # rapport [-] : rapport de boite engagé
 # q_carb [mg/cp] : débit de carburant (mg/cp : milligrammes par coup, masse de carburant injectée par cylindre pour 1 cycle thermodynamique)
+
+t = []
+v_veh = []
+pente = []
+rapport = []
+q_carb = []
+
+nbEtapes = len(q_carb)

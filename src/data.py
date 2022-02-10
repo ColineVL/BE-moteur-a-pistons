@@ -36,7 +36,14 @@ V1000_5 = 44.36
 # V1000 6ème en kmh/h par 1000tr/min
 V1000_6 = 57.96
 # On regroupe les vitesses dans un tableau pour simplifier
-array_boite_de_vitesse = [V1000_1, V1000_2, V1000_3, V1000_4, V1000_5, V1000_6]
+boite_de_vitesse_V1000 = {
+    1: V1000_1,
+    2: V1000_2,
+    3: V1000_3,
+    4: V1000_4,
+    5: V1000_5,
+    6: V1000_6,
+}
 
 """ Autres """
 # Constante de gravitation en m/s²
