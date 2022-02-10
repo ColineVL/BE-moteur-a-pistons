@@ -1,0 +1,5 @@
+# t [s] : temps
+# v_veh [km/h] : vitesse du véhicule
+# pente [°] : pente de la route, en degrés
+# rapport [-] : rapport de boite engagé
+# q_carb [mg/cp] : débit de carburant (mg/cp : milligrammes par coup, masse de carburant injectée par cylindre pour 1 cycle thermodynamique)

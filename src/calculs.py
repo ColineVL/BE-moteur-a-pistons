@@ -6,6 +6,8 @@ from data import *
 
 def calculRegimeMoteur():
     print("Question 1")
+    for index, rapport in enumerate(array_boite_de_vitesse):
+        valeursGlobales.r_moteur_roue[index] = 0
 
 
 """ 2. Calcul des efforts résistifs """
