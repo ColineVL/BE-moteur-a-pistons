@@ -10,6 +10,13 @@ M = []
 F_tot = []
 F_resistif = []
 
+plt.show()
+
+
+def plot(data, titre):
+    fig = plt.figure(titre)
+    plt.plot(data)
+
 
 def calculRegimeMoteur():
     """1. Calcul régime moteur"""
@@ -18,12 +25,9 @@ def calculRegimeMoteur():
         valeursGlobales.r_moteur_roue[rapport] = (2 * pi * 60 * R_roue) / V1000
 
     # FIXME ici on n'a pas besoin de ce qu'on vient de calculer, c'est bizarre
-    N_mot = []
-    for i in range(nbEtapes):
-        N_mot[i] = 1000 * v_veh[i] / V1000
-        if N_mot[i] < N_ralenti:
-            N_mot[i] = N_ralenti
-    plt.plot(N_mot, label="N_mot")
+    N_mot = [max(1000 * v_veh[i] / V1000, N_ralenti) for i in range(nbEtapes)]
+
+    plot(N_mot, "N_mot")
 
 
 def calculEffortsResistifs():
@@ -31,29 +35,23 @@ def calculEffortsResistifs():
     print("Question 2")
     # Question 2.1
     # theta angle de la pente en radian
-    theta = []
-    F_pente = []
-    F_aero = []
-    F_meca = []
     F_rr = []
 
-    for i in range(nbEtapes):
-        theta[i] = atan(pente[i] / 100)
+    theta = [atan(pente[i] / 100) for i in range(nbEtapes)]
+    F_pente = [M_veh * g * sin(theta[i]) for i in range(nbEtapes)]
+    F_aero = [0.5 * rho_air * v_veh[i] ** 2 * SCx for i in range(nbEtapes)]
+    F_resistif = [
+        F_pente[i] + F_aero[i] + F_rr[i] for i in range(nbEtapes)
+    ]  # Attention aux signes
 
-        F_pente = M_veh * g * sin(theta)
+    # TODO F_meca ???
+    # TODO F_rr ???
 
-        F_aero = 0.5 * rho_air * v_veh**2 * SCx
-
-        # TODO F_meca ???
-        # TODO F_rr ???
-
-        F_resistif[i] = F_pente[i] + F_aero[i] + F_rr[i]  # Attention aux signes
-
-    plt.plot(F_pente, label="F_pente")
-    plt.plot(F_aero, label="F_aero")
-    plt.plot(F_meca, label="F_meca")
-    plt.plot(F_rr, label="F_rr")
-    plt.plot(F_resistif, label="F_resistif")
+    plot(F_pente, "F_pente")
+    plot(F_aero, "F_aero")
+    plot(F_meca, "F_meca")
+    plot(F_rr, "F_rr")
+    plot(F_resistif, "F_resistif")
 
 
 def calculMasses():
@@ -61,13 +59,14 @@ def calculMasses():
     print("Question 3")
     M_eq = []
     eta_trans = 1  # rapport global de transmission, TODO à calculer
-    for i in range(nbEtapes):
-        M_eq[i] = (
-            I * eta_trans * (valeursGlobales.r_moteur_roue[rapport[i]] / R_roue) ** 2
-        )
-        M[i] = M_veh + M_eq[i]
-    plt.plot(M_eq, label="M_eq")
-    plt.plot(M, label="M")
+    M_eq = [
+        I * eta_trans * (valeursGlobales.r_moteur_roue[rapport[i]] / R_roue) ** 2
+        for i in range(nbEtapes)
+    ]
+    M = [M_veh + M_eq[i] for i in range(nbEtapes)]
+
+    plot(M_eq, "M_eq")
+    plot(M, "M")
 
 
 def calculEffortTotal():
@@ -75,25 +74,20 @@ def calculEffortTotal():
     print("Question 4")
 
     # Question 4.1
-    a = []
-    for i in range(nbEtapes):
-        a[i] = (v_veh[i] - v_veh[i - 1]) / (t[i] - t[i - 1])
-        F_tot[i] = M[i] * a[i]
-    plt.plot(a, label="a")
-    plt.plot(F_tot, label="F_tot")
+    a = [(v_veh[i] - v_veh[i - 1]) / (t[i] - t[i - 1]) for i in range(nbEtapes)]
+    F_tot = [M[i] * a[i] for i in range(nbEtapes)]
+    plot(a, "a")
+    plot(F_tot, "F_tot")
 
 
 def calculCoupleEffectifMoteur():
     """5. Calcul du couple effectif moteur"""
     print("Question 5")
-    F_traction = []
-    C_roue = []
-    for i in range(nbEtapes):
-        F_traction[i] = F_tot[i] - F_resistif[i]
-        C_roue[i] = F_traction[i] * R_roue
+    F_traction = [F_tot[i] - F_resistif[i] for i in range(nbEtapes)]
+    C_roue = [F_traction[i] * R_roue for i in range(nbEtapes)]
 
-    plt.plot(F_traction, label="F_traction")
-    plt.plot(C_roue, label="C_roue")
+    plot(F_traction, "F_traction")
+    plot(C_roue, "C_roue")
 
     # TODO Ce_mot
     # Ce_mot = (C_roue - C_mot * r_moteur_roue) / r_me_roue
@@ -134,4 +128,4 @@ def evaluationPotentielDeceleration():
 
 ### Notes
 # Cf pages 112 et 154
-# N_roue[i] = v_veh[i] / (2 * pi * R_roue)
+# N_roue = [v_veh[i] / (2 * pi * R_roue) for i in range(nbEtapes)]
