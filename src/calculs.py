@@ -1,5 +1,4 @@
 from math import pi, sin, cos
-import matplotlib.pyplot as plt
 
 import valeursGlobales
 from data import (
@@ -7,7 +6,7 @@ from data import (
     SCx,
     Crr,
     R_roue,
-    F_meca,
+    F_meca_cte,
     I,
     rend_trans,
     N_ralenti,
@@ -30,13 +29,7 @@ from fonctions import *
 M = []
 F_tot = []
 F_resistif = []
-
-plt.show()
-
-
-def plot(data, titre):
-    fig = plt.figure(titre)
-    plt.plot(data)
+N_mot = []
 
 
 def calculRegimeMoteur():
@@ -48,62 +41,61 @@ def calculRegimeMoteur():
     # FIXME ici on n'a pas besoin de ce qu'on vient de calculer, c'est bizarre
     N_mot = [max(1000 * v_veh[i] / V1000, N_ralenti) for i in range(nbEtapes)]
 
-    plot(N_mot, "N_mot")
+    plot(N_mot, "N_mot", 1)
 
 
 def calculEffortsResistifs():
     """2. Calcul des efforts résistifs"""
     print("Question 2")
-    # Question 2.1
     # theta angle de la pente en radian
-    F_rr = []
-
     theta = [conversionDegreToRadian(pente[i]) for i in range(nbEtapes)]
+    # n_roue nombre de roues
+    n_roue = 4
+    # M_pneu masse sur le pneu
+    M_pneu = M_veh / n_roue
+
+    F_rr = [
+        M_pneu * g * cos(theta[i]) * Crr[i] if v_veh[i] != 0 else 0
+        for i in range(nbEtapes)
+    ]
+    F_meca = [F_meca_cte if v_veh[i] != 0 else 0 for i in range(nbEtapes)]
     F_pente = [M_veh * g * sin(theta[i]) for i in range(nbEtapes)]
     F_aero = [
         0.5 * rho_air * conversionKmhToMs(v_veh[i]) ** 2 * SCx for i in range(nbEtapes)
     ]
-    F_resistif = [
-        F_pente[i] + F_aero[i] + F_rr[i] for i in range(nbEtapes)
-    ]  # Attention aux signes
+    F_resistif = [F_pente[i] + F_aero[i] + F_rr[i] + F_meca[i] for i in range(nbEtapes)]
 
-    # TODO F_meca ??? -> Constante, 50. Comment elle peut être nulle qd la vitesse est nulle ?
-    # TODO F_rr ??? -> le Crr est donné. Idem
-
-    plot(F_pente, "F_pente")
-    plot(F_aero, "F_aero")
-    plot(F_meca, "F_meca")
-    plot(F_rr, "F_rr")
-    plot(F_resistif, "F_resistif")
+    plot(F_pente, "F_pente", 2)
+    plot(F_aero, "F_aero", 2)
+    plot(F_meca, "F_meca", 2)
+    plot(F_rr, "F_rr", 2)
+    plot(F_resistif, "F_resistif", 2)
 
 
 def calculMasses():
     """3. Calcul des masses"""
     print("Question 3")
-    M_eq = []
     M_eq = [
         I * rend_trans * (valeursGlobales.r_moteur_roue[rapport[i]] / R_roue) ** 2
         for i in range(nbEtapes)
     ]
     M = [M_veh + M_eq[i] for i in range(nbEtapes)]
 
-    plot(M_eq, "M_eq")
-    plot(M, "M")
+    plot(M_eq, "M_eq", 3)
+    plot(M, "M", 3)
 
 
 def calculEffortTotal():
     """4. Calcul de l'effort total"""
     print("Question 4")
-
-    # Question 4.1
     a = [
         (conversionKmhToMs(v_veh[i]) - conversionKmhToMs(v_veh[i - 1]))
         / (t[i] - t[i - 1])
         for i in range(nbEtapes)
     ]
     F_tot = [M[i] * a[i] for i in range(nbEtapes)]
-    plot(a, "a")
-    plot(F_tot, "F_tot")
+    plot(a, "a", 4.1)
+    plot(F_tot, "F_tot", 4.2)
 
 
 def calculCoupleEffectifMoteur():
@@ -112,22 +104,38 @@ def calculCoupleEffectifMoteur():
     F_traction = [F_tot[i] - F_resistif[i] for i in range(nbEtapes)]
     C_roue = [F_traction[i] * R_roue for i in range(nbEtapes)]
 
-    plot(F_traction, "F_traction")
-    plot(C_roue, "C_roue")
+    plot(F_traction, "F_traction", 5.1)
+    plot(C_roue, "C_roue", 5.2)
 
     # TODO Ce_mot
+    Ce_mot = []
     # Ce_mot = (C_roue - C_mot * r_moteur_roue) / r_me_roue
     # r_moteur_roue = vit_rotation_mth / vit_rotation_roue
     # r_me_roue = vit_rotation_me / vit_rotation_roue
 
     # Puissance en W = vitesse_rotation en rad/s * couple en N.m
-    # TODO Pe_mot
-    # TODO P_traction
+    # omega_mot vitesse de rotation du moteur en rad/s
+    omega_mot = [
+        conversionTourParMinuteToRadParSeconde(N_mot[i]) for i in range(nbEtapes)
+    ]
+    # FIXME ici je suis vraiment pas sûre de P_traction
+    Pe_mot = [Ce_mot[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
+    P_traction = [C_roue[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
+
+    plot(Ce_mot, "Ce_mot", 5.2)
+    plot(Pe_mot, "Pe_mot", 5.4)
+    plot(P_traction, "P_traction", 5.4)
 
 
 def calculRendementEffectifConsoEtCO2():
     """6. Calcul du rendement effectif, de la consommation et du CO2"""
     print("Question 6")
+    # TODO q_carb
+    # TODO P_carb
+    # TODO rend_e
+    # TODO C
+    # TODO E_carb
+
     # Question 6.6
     M_CHY = M_C + M_H * Y
     M_CO2 = M_C + 2 * M_O

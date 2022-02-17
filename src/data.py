@@ -14,7 +14,7 @@ R_roue = 0.3067
 
 """ Transmission - moteur """
 # Force résistante mécanique en N
-F_meca = 50
+F_meca_cte = 50
 # Inertie des masses en rotation en kg.m²
 I = 0.16
 # Rendement de transmission
