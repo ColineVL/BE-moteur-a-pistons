@@ -18,7 +18,7 @@ F_meca = 50
 # Inertie des masses en rotation en kg.m²
 I = 0.16
 # Rendement de transmission
-0.8
+rend_trans = 0.8
 # Régime de ralenti en tr/min
 N_ralenti = 850
 
@@ -36,7 +36,7 @@ V1000_5 = 44.36
 # V1000 6ème en kmh/h par 1000tr/min
 V1000_6 = 57.96
 # On regroupe les vitesses dans un tableau pour simplifier
-boite_de_vitesse_V1000 = {
+dict_V1000 = {
     1: V1000_1,
     2: V1000_2,
     3: V1000_3,

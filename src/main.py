@@ -1,5 +1,4 @@
 from calculs import *
-import valeursGlobales
 
 
 def main():

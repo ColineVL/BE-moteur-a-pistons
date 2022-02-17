@@ -10,4 +10,6 @@ pente = []
 rapport = []
 q_carb = []
 
+assert len(t) == len(v_veh) == len(pente) == len(rapport) == len(q_carb)
 nbEtapes = len(q_carb)
+print(f"Chargé {nbEtapes} lignes du fichier")

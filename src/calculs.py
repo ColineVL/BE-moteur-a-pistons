@@ -1,9 +1,30 @@
-from math import pi, atan, sin, cos
+from math import pi, sin, cos
 import matplotlib.pyplot as plt
 
 import valeursGlobales
-from data import *
+from data import (
+    M_veh,
+    SCx,
+    Crr,
+    R_roue,
+    F_meca,
+    I,
+    rend_trans,
+    N_ralenti,
+    dict_V1000,
+    g,
+    rho_air,
+    PCI,
+    rho_carb,
+    Y,
+    M_H,
+    M_C,
+    M_O,
+    n_cyl,
+    dict_pleine_charge,
+)
 from dataCycleDeRoulage import t, v_veh, pente, rapport, q_carb, nbEtapes
+from fonctions import *
 
 # Quelques valeurs réutilisées entre les questions
 M = []
@@ -21,7 +42,7 @@ def plot(data, titre):
 def calculRegimeMoteur():
     """1. Calcul régime moteur"""
     print("Question 1")
-    for rapport, V1000 in boite_de_vitesse_V1000.items():
+    for rapport, V1000 in dict_V1000.items():
         valeursGlobales.r_moteur_roue[rapport] = (2 * pi * 60 * R_roue) / V1000
 
     # FIXME ici on n'a pas besoin de ce qu'on vient de calculer, c'est bizarre
@@ -37,15 +58,17 @@ def calculEffortsResistifs():
     # theta angle de la pente en radian
     F_rr = []
 
-    theta = [atan(pente[i] / 100) for i in range(nbEtapes)]
+    theta = [conversionDegreToRadian(pente[i]) for i in range(nbEtapes)]
     F_pente = [M_veh * g * sin(theta[i]) for i in range(nbEtapes)]
-    F_aero = [0.5 * rho_air * v_veh[i] ** 2 * SCx for i in range(nbEtapes)]
+    F_aero = [
+        0.5 * rho_air * conversionKmhToMs(v_veh[i]) ** 2 * SCx for i in range(nbEtapes)
+    ]
     F_resistif = [
         F_pente[i] + F_aero[i] + F_rr[i] for i in range(nbEtapes)
     ]  # Attention aux signes
 
-    # TODO F_meca ???
-    # TODO F_rr ???
+    # TODO F_meca ??? -> Constante, 50. Comment elle peut être nulle qd la vitesse est nulle ?
+    # TODO F_rr ??? -> le Crr est donné. Idem
 
     plot(F_pente, "F_pente")
     plot(F_aero, "F_aero")
@@ -58,9 +81,8 @@ def calculMasses():
     """3. Calcul des masses"""
     print("Question 3")
     M_eq = []
-    eta_trans = 1  # rapport global de transmission, TODO à calculer
     M_eq = [
-        I * eta_trans * (valeursGlobales.r_moteur_roue[rapport[i]] / R_roue) ** 2
+        I * rend_trans * (valeursGlobales.r_moteur_roue[rapport[i]] / R_roue) ** 2
         for i in range(nbEtapes)
     ]
     M = [M_veh + M_eq[i] for i in range(nbEtapes)]
@@ -74,7 +96,11 @@ def calculEffortTotal():
     print("Question 4")
 
     # Question 4.1
-    a = [(v_veh[i] - v_veh[i - 1]) / (t[i] - t[i - 1]) for i in range(nbEtapes)]
+    a = [
+        (conversionKmhToMs(v_veh[i]) - conversionKmhToMs(v_veh[i - 1]))
+        / (t[i] - t[i - 1])
+        for i in range(nbEtapes)
+    ]
     F_tot = [M[i] * a[i] for i in range(nbEtapes)]
     plot(a, "a")
     plot(F_tot, "F_tot")
