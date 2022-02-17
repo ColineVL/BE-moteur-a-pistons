@@ -35,11 +35,17 @@ N_mot = []
 def calculRegimeMoteur():
     """1. Calcul régime moteur"""
     print("Question 1")
-    for rapport, V1000 in dict_V1000.items():
-        valeursGlobales.r_moteur_roue[rapport] = (2 * pi * 60 * R_roue) / V1000
+    for rap, V1000 in dict_V1000.items():
+        valeursGlobales.r_moteur_roue[rap] = (
+            (2 * pi * 60 * R_roue) / V1000 if V1000 != 0 else 0
+        )
 
-    # FIXME ici on n'a pas besoin de ce qu'on vient de calculer, c'est bizarre
-    N_mot = [max(1000 * v_veh[i] / V1000, N_ralenti) for i in range(nbEtapes)]
+    N_mot = [
+        max(1000 * v_veh[i] / dict_V1000[rapport[i]], N_ralenti)
+        if rapport[i] != 0
+        else N_ralenti
+        for i in range(nbEtapes)
+    ]
 
     plot(N_mot, "N_mot", 1)
 
@@ -49,13 +55,9 @@ def calculEffortsResistifs():
     print("Question 2")
     # theta angle de la pente en radian
     theta = [conversionDegreToRadian(pente[i]) for i in range(nbEtapes)]
-    # n_roue nombre de roues
-    n_roue = 4
-    # M_pneu masse sur le pneu
-    M_pneu = M_veh / n_roue
 
     F_rr = [
-        M_pneu * g * cos(theta[i]) * Crr[i] if v_veh[i] != 0 else 0
+        M_veh * g * cos(theta[i]) * Crr[i] if v_veh[i] != 0 else 0
         for i in range(nbEtapes)
     ]
     F_meca = [F_meca_cte if v_veh[i] != 0 else 0 for i in range(nbEtapes)]

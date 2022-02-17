@@ -37,6 +37,7 @@ V1000_5 = 44.36
 V1000_6 = 57.96
 # On regroupe les vitesses dans un tableau pour simplifier
 dict_V1000 = {
+    0: 0,
     1: V1000_1,
     2: V1000_2,
     3: V1000_3,
