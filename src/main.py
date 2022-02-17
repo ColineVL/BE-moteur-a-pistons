@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 def main():
     calculRegimeMoteur()
     calculEffortsResistifs()
-    # calculMasses()
+    calculMasses()
     # calculEffortTotal()
     # calculCoupleEffectifMoteur()
     # calculRendementEffectifConsoEtCO2()
