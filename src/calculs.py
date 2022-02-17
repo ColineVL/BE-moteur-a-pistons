@@ -102,19 +102,20 @@ def calculCoupleEffectifMoteur():
     """5. Calcul du couple effectif moteur"""
     print("Question 5")
     F_traction = [
-        valeursGlobales.F_tot[i] - valeursGlobales.F_resistif[i]
+        valeursGlobales.F_tot[i] + valeursGlobales.F_resistif[i]
         for i in range(nbEtapes)
     ]
     C_roue = [F_traction[i] * R_roue for i in range(nbEtapes)]
 
-    plot(F_traction, "F_traction", 5.1)
-    plot(C_roue, "C_roue", 5.2)
+    plot(F_traction, "F_traction", 51)
+    plot(C_roue, "C_roue", 52)
 
-    # TODO Ce_mot
-    Ce_mot = []
-    # Ce_mot = (C_roue - C_mot * r_moteur_roue) / r_me_roue
-    # r_moteur_roue = vit_rotation_mth / vit_rotation_roue
-    # r_me_roue = vit_rotation_me / vit_rotation_roue
+    Ce_mot = [
+        C_roue[i] / (valeursGlobales.r_moteur_roue[rapport[i]] * rend_trans)
+        if rapport[i] != 0
+        else 0
+        for i in range(nbEtapes)
+    ]
 
     # Puissance en W = vitesse_rotation en rad/s * couple en N.m
     # omega_mot vitesse de rotation du moteur en rad/s
@@ -122,13 +123,14 @@ def calculCoupleEffectifMoteur():
         conversionTourParMinuteToRadParSeconde(valeursGlobales.N_mot[i])
         for i in range(nbEtapes)
     ]
-    # FIXME ici je suis vraiment pas sûre de P_traction
     Pe_mot = [Ce_mot[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
-    P_traction = [C_roue[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
+    P_traction = [
+        F_traction[i] * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
+    ]
 
-    plot(Ce_mot, "Ce_mot", 5.2)
-    plot(Pe_mot, "Pe_mot", 5.4)
-    plot(P_traction, "P_traction", 5.4)
+    plot(Ce_mot, "Ce_mot", 52)
+    plot(Pe_mot, "Pe_mot", 54)
+    plot(P_traction, "P_traction", 54)
 
 
 def calculRendementEffectifConsoEtCO2():

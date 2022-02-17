@@ -7,7 +7,7 @@ def main():
     calculEffortsResistifs()
     calculMasses()
     calculEffortTotal()
-    # calculCoupleEffectifMoteur()
+    calculCoupleEffectifMoteur()
     # calculRendementEffectifConsoEtCO2()
     # evaluationAdaptationSurCycle()
     # evaluationPotentielDeceleration()

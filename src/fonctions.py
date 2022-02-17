@@ -13,7 +13,7 @@ def conversionKmhToMs(vitesse):
 
 
 def conversionTourParMinuteToRadParSeconde(vitesse_rot):
-    return vitesse_rot / (2 * pi / 60)
+    return vitesse_rot * (2 * pi / 60)
 
 
 plt.show()
