@@ -57,7 +57,7 @@ def calculEffortsResistifs():
     theta = [conversionDegreToRadian(pente[i]) for i in range(nbEtapes)]
 
     F_rr = [
-        M_veh * g * cos(theta[i]) * Crr[i] if v_veh[i] != 0 else 0
+        M_veh * g * cos(theta[i]) * Crr * 0.001 if v_veh[i] != 0 else 0
         for i in range(nbEtapes)
     ]
     F_meca = [F_meca_cte if v_veh[i] != 0 else 0 for i in range(nbEtapes)]
