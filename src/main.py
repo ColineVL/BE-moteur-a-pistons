@@ -10,6 +10,7 @@ def main():
     # calculRendementEffectifConsoEtCO2()
     # evaluationAdaptationSurCycle()
     # evaluationPotentielDeceleration()
+    valeursGlobales.printAll()
 
 
 if __name__ == "__main__":

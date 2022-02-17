@@ -1,5 +1,6 @@
 # Rapport des régimes de rotation moteur/roue, pour chacun des rapports de transmission
 r_moteur_roue = {
+    0: 0,
     1: 0,
     2: 0,
     3: 0,
@@ -33,3 +34,7 @@ eco_E_carb = 0
 eco_V_carb = 0
 # Réduction de consommation en L/100km
 eco_C = 0
+
+
+def printAll():
+    print(f"r_moteur_roue : {r_moteur_roue}")
