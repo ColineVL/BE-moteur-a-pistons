@@ -21,4 +21,6 @@ plt.show()
 
 def plot(data, titre, number):
     fig = plt.figure(number)
-    fig.plot(data, label=titre)
+    plt.plot(data, label=titre)
+    plt.legend()
+    plt.show()
