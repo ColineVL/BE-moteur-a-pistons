@@ -8,10 +8,14 @@ def cleanValue(value):
     return float(value)
 
 
+def cleanValueInt(value):
+    return int(value)
+
+
 t = [cleanValue(cell.value) for cell in sheet["A"][1:]]
 v_veh = [cleanValue(cell.value) for cell in sheet["B"][1:]]
 pente = [cleanValue(cell.value) for cell in sheet["C"][1:]]
-rapport = [cleanValue(cell.value) for cell in sheet["D"][1:]]
+rapport = [cleanValueInt(cell.value) for cell in sheet["D"][1:]]
 q_carb = [cleanValue(cell.value) for cell in sheet["E"][1:]]
 
 # t [s] : temps
