@@ -22,7 +22,7 @@ from data import (
     n_cyl,
     dict_pleine_charge,
 )
-from dataCycleDeRoulage import t, v_veh, pente, rapport, q_carb, nbEtapes
+from dataCycleDeRoulage import t, v_veh, pente, rapport, q_carb_mgcp, nbEtapes
 from fonctions import *
 
 
@@ -41,7 +41,7 @@ def calculRegimeMoteur():
         for i in range(nbEtapes)
     ]
 
-    plot(valeursGlobales.N_mot, "N_mot", 1)
+    # plot(valeursGlobales.N_mot, "N_mot", 1)
 
 
 def calculEffortsResistifs():
@@ -63,11 +63,11 @@ def calculEffortsResistifs():
         F_pente[i] + F_aero[i] + F_rr[i] + F_meca[i] for i in range(nbEtapes)
     ]
 
-    plot(F_pente, "F_pente", 2)
-    plot(F_aero, "F_aero", 2)
-    plot(F_meca, "F_meca", 2)
-    plot(F_rr, "F_rr", 2)
-    plot(valeursGlobales.F_resistif, "F_resistif", 2)
+    # plot(F_pente, "F_pente", 2)
+    # plot(F_aero, "F_aero", 2)
+    # plot(F_meca, "F_meca", 2)
+    # plot(F_rr, "F_rr", 2)
+    # plot(valeursGlobales.F_resistif, "F_resistif", 2)
 
 
 def calculMasses():
@@ -79,8 +79,8 @@ def calculMasses():
     ]
     valeursGlobales.M = [M_veh + M_eq[i] for i in range(nbEtapes)]
 
-    plot(M_eq, "M_eq", 3)
-    plot(valeursGlobales.M, "M", 3)
+    # plot(M_eq, "M_eq", 3)
+    # plot(valeursGlobales.M, "M", 3)
 
 
 def calculEffortTotal():
@@ -94,8 +94,8 @@ def calculEffortTotal():
         for i in range(nbEtapes)
     ]
     valeursGlobales.F_tot = [valeursGlobales.M[i] * a[i] for i in range(nbEtapes)]
-    plot(a, "a", 41)
-    plot(valeursGlobales.F_tot, "F_tot", 42)
+    # plot(a, "a", 41)
+    # plot(valeursGlobales.F_tot, "F_tot", 42)
 
 
 def calculCoupleEffectifMoteur():
@@ -123,37 +123,45 @@ def calculCoupleEffectifMoteur():
         conversionTourParMinuteToRadParSeconde(valeursGlobales.N_mot[i])
         for i in range(nbEtapes)
     ]
-    Pe_mot = [Ce_mot[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
+    valeursGlobales.Pe_mot = [Ce_mot[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
     P_traction = [
         F_traction[i] * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
     ]
 
     plot(Ce_mot, "Ce_mot", 52)
-    plot(Pe_mot, "Pe_mot", 54)
+    plot(valeursGlobales.Pe_mot, "Pe_mot", 54)
     plot(P_traction, "P_traction", 54)
 
 
 def calculRendementEffectifConsoEtCO2():
     """6. Calcul du rendement effectif, de la consommation et du CO2"""
     print("Question 6")
-    # TODO q_carb
-    # TODO P_carb
-    # TODO rend_e
-    # TODO C
-    # TODO E_carb
+    q_carb = [n_cyl * valeursGlobales.N_mot[i] / 2 for i in range(nbEtapes)]
+    plot(q_carb, "q_carb", 61)
+    P_carb = [q_carb[i] * PCI / 1000 for i in range(nbEtapes)]
+    plot(P_carb, "P_carb", 62)
+    rend_e = [valeursGlobales.Pe_mot[i] / P_carb[i] for i in range(nbEtapes)]
+    plot(rend_e, "rend_e", 63)
+    # masse_carburant_totale [kg] masse totale de carburant consommée sur tout le trajet
+    masse_carburant_totale = (
+        sum(q_carb[i] * (t[i] - t[i - 1]) for i in range(1, nbEtapes)) / 1000000
+    )
+    # conso_carburant_totale [litres] conso totale
+    conso_carburant_totale = conversionCarburantKgToLitres(masse_carburant_totale)
+    # distance_totale [km] distance totale parcourue pendant le trajet
+    distance_totale = sum(
+        conversionKmhToKms(v_veh[i]) * (t[i] - t[i - 1]) for i in range(1, nbEtapes)
+    )
+    # On convertit en litres aux 100 km
+    valeursGlobales.C = conso_carburant_totale * 100 / distance_totale
 
-    # Question 6.6
+    valeursGlobales.E_carb = conversionMJTokWh(PCI) * masse_carburant_totale
+
     M_CHY = M_C + M_H * Y
     M_CO2 = M_C + 2 * M_O
-
-    # On a C en litres / 100 km
-    # Conversion en m3
-    Cm3 = 0.001 * valeursGlobales.C
-    # Conversion en g
-    Cg = Cm3 * rho_carb * 1000
-    # Tout ça c'est pour 100 km, pour 1 km je divise donc
-    masse_carburant = Cg / 100
-    valeursGlobales.CO2 = masse_carburant * M_CO2 / M_CHY
+    # masse_carburant_au_km [g] masse de carburant par km
+    masse_carburant_au_km = masse_carburant_totale / distance_totale * 1000
+    valeursGlobales.CO2 = masse_carburant_au_km * M_CO2 / M_CHY
 
 
 def evaluationAdaptationSurCycle():

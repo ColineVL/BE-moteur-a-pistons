@@ -38,6 +38,9 @@ eco_C = 0
 
 def printAll():
     print(f"r_moteur_roue : {r_moteur_roue}")
+    print(f"C : {C}")
+    print(f"E_carb : {E_carb}")
+    print(f"CO2 : {CO2}")
 
 
 # Quelques valeurs réutilisées entre les questions
@@ -45,3 +48,4 @@ M = []
 F_tot = []
 F_resistif = []
 N_mot = []
+Pe_mot = []
