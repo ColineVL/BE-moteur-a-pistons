@@ -6,7 +6,7 @@ def main():
     calculRegimeMoteur()
     calculEffortsResistifs()
     calculMasses()
-    # calculEffortTotal()
+    calculEffortTotal()
     # calculCoupleEffectifMoteur()
     # calculRendementEffectifConsoEtCO2()
     # evaluationAdaptationSurCycle()
