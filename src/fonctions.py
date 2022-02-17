@@ -23,4 +23,3 @@ def plot(data, titre, number):
     fig = plt.figure(number)
     plt.plot(data, label=titre)
     plt.legend()
-    plt.show()
