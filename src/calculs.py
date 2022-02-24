@@ -39,8 +39,7 @@ def calculRegimeMoteur():
         else N_ralenti
         for i in range(nbEtapes)
     ]
-
-    # plot(valeursGlobales.N_mot, "N_mot", 1)
+    plot(valeursGlobales.N_mot, "N_mot", 1)
 
 
 def calculEffortsResistifs():
@@ -53,20 +52,19 @@ def calculEffortsResistifs():
         M_veh * g * cos(theta[i]) * Crr * 0.001 if v_veh[i] != 0 else 0
         for i in range(nbEtapes)
     ]
+    plot(F_rr, "F_rr", 2)
     F_meca = [F_meca_cte if v_veh[i] != 0 else 0 for i in range(nbEtapes)]
+    plot(F_meca, "F_meca", 2)
     F_pente = [M_veh * g * sin(theta[i]) for i in range(nbEtapes)]
+    plot(F_pente, "F_pente", 2)
     F_aero = [
         0.5 * rho_air * conversionKmhToMs(v_veh[i]) ** 2 * SCx for i in range(nbEtapes)
     ]
+    plot(F_aero, "F_aero", 2)
     valeursGlobales.F_resistif = [
         F_pente[i] + F_aero[i] + F_rr[i] + F_meca[i] for i in range(nbEtapes)
     ]
-
-    # plot(F_pente, "F_pente", 2)
-    # plot(F_aero, "F_aero", 2)
-    # plot(F_meca, "F_meca", 2)
-    # plot(F_rr, "F_rr", 2)
-    # plot(valeursGlobales.F_resistif, "F_resistif", 2)
+    plot(valeursGlobales.F_resistif, "F_resistif", 2)
 
 
 def calculMasses():
@@ -76,10 +74,9 @@ def calculMasses():
         I * rend_trans * (valeursGlobales.r_moteur_roue[rapport[i]] / R_roue) ** 2
         for i in range(nbEtapes)
     ]
+    plot(M_eq, "M_eq", 3)
     valeursGlobales.M = [M_veh + M_eq[i] for i in range(nbEtapes)]
-
-    # plot(M_eq, "M_eq", 3)
-    # plot(valeursGlobales.M, "M", 3)
+    plot(valeursGlobales.M, "M", 3)
 
 
 def calculEffortTotal():
@@ -92,9 +89,9 @@ def calculEffortTotal():
         else 0
         for i in range(nbEtapes)
     ]
+    plot(a, "a", 41)
     valeursGlobales.F_tot = [valeursGlobales.M[i] * a[i] for i in range(nbEtapes)]
-    # plot(a, "a", 41)
-    # plot(valeursGlobales.F_tot, "F_tot", 42)
+    plot(valeursGlobales.F_tot, "F_tot", 42)
 
 
 def calculCoupleEffectifMoteur():
@@ -104,9 +101,8 @@ def calculCoupleEffectifMoteur():
         valeursGlobales.F_tot[i] + valeursGlobales.F_resistif[i]
         for i in range(nbEtapes)
     ]
-    C_roue = [F_traction[i] * R_roue for i in range(nbEtapes)]
-
     plot(F_traction, "F_traction", 51)
+    C_roue = [F_traction[i] * R_roue for i in range(nbEtapes)]
     plot(C_roue, "C_roue", 52)
 
     Ce_mot = [
@@ -115,6 +111,7 @@ def calculCoupleEffectifMoteur():
         else 0
         for i in range(nbEtapes)
     ]
+    plot(Ce_mot, "Ce_mot", 52)
 
     # Puissance en W = vitesse_rotation en rad/s * couple en N.m
     # omega_mot vitesse de rotation du moteur en rad/s
@@ -123,13 +120,11 @@ def calculCoupleEffectifMoteur():
         for i in range(nbEtapes)
     ]
     valeursGlobales.Pe_mot = [Ce_mot[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
-    P_traction = [
+    plot(valeursGlobales.Pe_mot, "Pe_mot", 54)
+    valeursGlobales.P_traction = [
         F_traction[i] * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
     ]
-
-    # plot(Ce_mot, "Ce_mot", 52)
-    # plot(valeursGlobales.Pe_mot, "Pe_mot", 54)
-    # plot(P_traction, "P_traction", 54)
+    plot(valeursGlobales.P_traction, "P_traction", 54)
 
 
 def calculRendementEffectifConsoEtCO2():
@@ -141,11 +136,11 @@ def calculRendementEffectifConsoEtCO2():
     plot(q_carb, "q_carb", 61)
     P_carb = [q_carb[i] * PCI / 1000 for i in range(nbEtapes)]
     plot(P_carb, "P_carb", 62)
-    rend_e = [
+    valeursGlobales.rend_e = [
         valeursGlobales.Pe_mot[i] / P_carb[i] if P_carb[i] != 0 else 0
         for i in range(nbEtapes)
     ]
-    plot(rend_e, "rend_e", 63)
+    plot(valeursGlobales.rend_e, "rend_e", 63)
     # masse_carburant_totale [kg] masse totale de carburant consommée sur tout le trajet
     masse_carburant_totale = (
         sum(q_carb[i] * (t[i] - t[i - 1]) for i in range(1, nbEtapes)) / 1000000
@@ -153,18 +148,20 @@ def calculRendementEffectifConsoEtCO2():
     # conso_carburant_totale [litres] conso totale
     conso_carburant_totale = conversionCarburantKgToLitres(masse_carburant_totale)
     # distance_totale [km] distance totale parcourue pendant le trajet
-    distance_totale = sum(
+    valeursGlobales.distance_totale = sum(
         conversionKmhToKms(v_veh[i]) * (t[i] - t[i - 1]) for i in range(1, nbEtapes)
     )
     # On convertit en litres aux 100 km
-    valeursGlobales.C = conso_carburant_totale * 100 / distance_totale
+    valeursGlobales.C = conso_carburant_totale * 100 / valeursGlobales.distance_totale
 
     valeursGlobales.E_carb = conversionMJTokWh(PCI) * masse_carburant_totale
 
     M_CHY = M_C + M_H * Y
     M_CO2 = M_C + 2 * M_O
     # masse_carburant_au_km [g] masse de carburant par km
-    masse_carburant_au_km = masse_carburant_totale / distance_totale * 1000
+    masse_carburant_au_km = (
+        masse_carburant_totale / valeursGlobales.distance_totale * 1000
+    )
     valeursGlobales.CO2 = masse_carburant_au_km * M_CO2 / M_CHY
 
 
@@ -176,8 +173,42 @@ def evaluationAdaptationSurCycle():
 def evaluationPotentielDeceleration():
     """8. Evaluation du potentiel de récupération d'énergie à la décélération"""
     print("Question 8")
+    # Puissance de traction
+    P_traction_ap = [max(valeursGlobales.P_traction[i], 0) for i in range(nbEtapes)]
+    plot(P_traction_ap, "P_traction_ap", 81)
+    P_traction_an = [min(valeursGlobales.P_traction[i], 0) for i in range(nbEtapes)]
+    plot(P_traction_an, "P_traction_an", 82)
 
+    # Energie de traction
+    valeursGlobales.E_traction_ap = sum(
+        P_traction_ap[i] * conversionSecondeToHeure(t[i] - t[i - 1])
+        for i in range(1, nbEtapes)
+    )
+    valeursGlobales.E_traction_an = sum(
+        P_traction_an[i] * conversionSecondeToHeure(t[i] - t[i - 1])
+        for i in range(1, nbEtapes)
+    )
 
-### Notes
-# Cf pages 112 et 154
-# N_roue = [v_veh[i] / (2 * pi * R_roue) for i in range(nbEtapes)]
+    # Energie disponible
+    valeursGlobales.E_traction_elec = 0.8 * valeursGlobales.E_traction_an
+    # Energie restante
+    valeursGlobales.E_traction_therm = (
+        valeursGlobales.E_traction_ap - valeursGlobales.E_traction_elec
+    )
+    # Rendement
+    valeursGlobales.rend_traction_therm = (
+        valeursGlobales.E_traction_therm / valeursGlobales.E_carb
+    )
+    # Energie à introduire
+    valeursGlobales.E_carb_hyb = (
+        valeursGlobales.E_traction_therm / valeursGlobales.rend_traction_therm
+    )
+
+    # Economies
+    valeursGlobales.eco_E_carb = valeursGlobales.E_carb - valeursGlobales.E_carb_hyb
+    assert valeursGlobales.eco_E_carb != 0
+    eco_carburant_masse = conversionMJTokWh(PCI) / valeursGlobales.eco_E_carb
+    valeursGlobales.eco_V_carb = conversionCarburantKgToLitres(eco_carburant_masse)
+    valeursGlobales.eco_C = (
+        valeursGlobales.eco_V_carb * 100 / valeursGlobales.distance_totale
+    )

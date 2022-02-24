@@ -37,10 +37,15 @@ def conversionMJTokWh(MJ):
     return MJ / (3.6 * 10**12)
 
 
+def conversionSecondeToHeure(seconde):
+    return seconde / 3600
+
+
 plt.show()
 
 
 def plot(data, titre, number):
-    fig = plt.figure(number)
-    plt.plot(data, label=titre)
-    plt.legend()
+    if number > 60:
+        fig = plt.figure(number)
+        plt.plot(data, label=titre)
+        plt.legend()

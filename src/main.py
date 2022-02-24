@@ -9,8 +9,8 @@ def main():
     calculEffortTotal()
     calculCoupleEffectifMoteur()
     calculRendementEffectifConsoEtCO2()
-    # evaluationAdaptationSurCycle()
-    # evaluationPotentielDeceleration()
+    evaluationAdaptationSurCycle()
+    evaluationPotentielDeceleration()
     valeursGlobales.printAll()
     plt.show()
 
