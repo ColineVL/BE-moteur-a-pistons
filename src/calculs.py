@@ -14,7 +14,6 @@ from data import (
     g,
     rho_air,
     PCI,
-    rho_carb,
     Y,
     M_H,
     M_C,
@@ -128,19 +127,24 @@ def calculCoupleEffectifMoteur():
         F_traction[i] * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
     ]
 
-    plot(Ce_mot, "Ce_mot", 52)
-    plot(valeursGlobales.Pe_mot, "Pe_mot", 54)
-    plot(P_traction, "P_traction", 54)
+    # plot(Ce_mot, "Ce_mot", 52)
+    # plot(valeursGlobales.Pe_mot, "Pe_mot", 54)
+    # plot(P_traction, "P_traction", 54)
 
 
 def calculRendementEffectifConsoEtCO2():
     """6. Calcul du rendement effectif, de la consommation et du CO2"""
     print("Question 6")
-    q_carb = [n_cyl * valeursGlobales.N_mot[i] / 2 for i in range(nbEtapes)]
+    q_carb = [
+        q_carb_mgcp[i] * n_cyl * valeursGlobales.N_mot[i] / 2 for i in range(nbEtapes)
+    ]
     plot(q_carb, "q_carb", 61)
     P_carb = [q_carb[i] * PCI / 1000 for i in range(nbEtapes)]
     plot(P_carb, "P_carb", 62)
-    rend_e = [valeursGlobales.Pe_mot[i] / P_carb[i] for i in range(nbEtapes)]
+    rend_e = [
+        valeursGlobales.Pe_mot[i] / P_carb[i] if P_carb[i] != 0 else 0
+        for i in range(nbEtapes)
+    ]
     plot(rend_e, "rend_e", 63)
     # masse_carburant_totale [kg] masse totale de carburant consommée sur tout le trajet
     masse_carburant_totale = (
