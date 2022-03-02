@@ -1,5 +1,5 @@
 from calculs import *
-import matplotlib.pyplot as plt
+import valeursGlobales
 
 
 def main():

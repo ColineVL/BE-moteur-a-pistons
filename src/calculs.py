@@ -1,5 +1,6 @@
 from math import pi, sin, cos
 
+from valeursGlobales import dict_valeursGlobales
 import valeursGlobales
 from data import (
     M_veh,
@@ -29,7 +30,7 @@ def calculRegimeMoteur():
     """1. Calcul régime moteur"""
     print("Question 1")
     for rap, V1000 in dict_V1000.items():
-        valeursGlobales.r_moteur_roue[rap] = (
+        dict_valeursGlobales["r_moteur_roue"][rap] = (
             (2 * pi * 60 * R_roue) / V1000 if V1000 != 0 else 0
         )
 
@@ -71,7 +72,9 @@ def calculMasses():
     """3. Calcul des masses"""
     print("Question 3")
     M_eq = [
-        I * rend_trans * (valeursGlobales.r_moteur_roue[rapport[i]] / R_roue) ** 2
+        I
+        * rend_trans
+        * (dict_valeursGlobales["r_moteur_roue"][rapport[i]] / R_roue) ** 2
         for i in range(nbEtapes)
     ]
     plot(M_eq, "M_eq")
@@ -106,7 +109,7 @@ def calculCoupleEffectifMoteur():
     plot(C_roue, "C_roue")
 
     Ce_mot = [
-        C_roue[i] / (valeursGlobales.r_moteur_roue[rapport[i]] * rend_trans)
+        C_roue[i] / (dict_valeursGlobales["r_moteur_roue"][rapport[i]] * rend_trans)
         if rapport[i] != 0
         else 0
         for i in range(nbEtapes)
@@ -136,11 +139,11 @@ def calculRendementEffectifConsoEtCO2():
     plot(q_carb, "q_carb")
     P_carb = [q_carb[i] * PCI / 1000 for i in range(nbEtapes)]
     plot(P_carb, "P_carb")
-    valeursGlobales.rend_e = [
+    rend_e = [
         valeursGlobales.Pe_mot[i] / P_carb[i] if P_carb[i] != 0 else 0
         for i in range(nbEtapes)
     ]
-    plot(valeursGlobales.rend_e, "rend_e")
+    plot(rend_e, "rend_e")
     # masse_carburant_totale [kg] masse totale de carburant consommée sur tout le trajet
     masse_carburant_totale = (
         sum(q_carb[i] * (t[i] - t[i - 1]) for i in range(1, nbEtapes)) / 1000000
@@ -152,9 +155,11 @@ def calculRendementEffectifConsoEtCO2():
         conversionKmhToKms(v_veh[i]) * (t[i] - t[i - 1]) for i in range(1, nbEtapes)
     )
     # On convertit en litres aux 100 km
-    valeursGlobales.C = conso_carburant_totale * 100 / valeursGlobales.distance_totale
+    dict_valeursGlobales["C"] = (
+        conso_carburant_totale * 100 / valeursGlobales.distance_totale
+    )
 
-    valeursGlobales.E_carb = conversionMJTokWh(PCI) * masse_carburant_totale
+    dict_valeursGlobales["E_carb"] = conversionMJTokWh(PCI) * masse_carburant_totale
 
     M_CHY = M_C + M_H * Y
     M_CO2 = M_C + 2 * M_O
@@ -162,7 +167,7 @@ def calculRendementEffectifConsoEtCO2():
     masse_carburant_au_km = (
         masse_carburant_totale / valeursGlobales.distance_totale * 1000
     )
-    valeursGlobales.CO2 = masse_carburant_au_km * M_CO2 / M_CHY
+    dict_valeursGlobales["CO2"] = masse_carburant_au_km * M_CO2 / M_CHY
 
 
 def evaluationAdaptationSurCycle():
@@ -180,35 +185,40 @@ def evaluationPotentielDeceleration():
     plot(P_traction_an, "P_traction_an")
 
     # Energie de traction
-    valeursGlobales.E_traction_ap = sum(
+    dict_valeursGlobales["E_traction_ap"] = sum(
         P_traction_ap[i] * conversionSecondeToHeure(t[i] - t[i - 1])
         for i in range(1, nbEtapes)
     )
-    valeursGlobales.E_traction_an = sum(
+    dict_valeursGlobales["E_traction_an"] = sum(
         P_traction_an[i] * conversionSecondeToHeure(t[i] - t[i - 1])
         for i in range(1, nbEtapes)
     )
 
     # Energie disponible
-    valeursGlobales.E_traction_elec = 0.8 * valeursGlobales.E_traction_an
+    dict_valeursGlobales["E_traction_elec"] = (
+        0.8 * dict_valeursGlobales["E_traction_an"]
+    )
     # Energie restante
-    valeursGlobales.E_traction_therm = (
-        valeursGlobales.E_traction_ap - valeursGlobales.E_traction_elec
+    dict_valeursGlobales["E_traction_therm"] = (
+        dict_valeursGlobales["E_traction_ap"] - dict_valeursGlobales["E_traction_elec"]
     )
     # Rendement
-    valeursGlobales.rend_traction_therm = (
-        valeursGlobales.E_traction_therm / valeursGlobales.E_carb
+    dict_valeursGlobales["rend_traction_therm"] = (
+        dict_valeursGlobales["E_traction_therm"] / dict_valeursGlobales["E_carb"]
     )
     # Energie à introduire
-    valeursGlobales.E_carb_hyb = (
-        valeursGlobales.E_traction_therm / valeursGlobales.rend_traction_therm
+    dict_valeursGlobales["E_carb_hyb"] = (
+        dict_valeursGlobales["E_traction_therm"]
+        / dict_valeursGlobales["rend_traction_therm"]
     )
 
     # Economies
-    valeursGlobales.eco_E_carb = valeursGlobales.E_carb - valeursGlobales.E_carb_hyb
-    # assert valeursGlobales.eco_E_carb != 0
-    # eco_carburant_masse = conversionMJTokWh(PCI) / valeursGlobales.eco_E_carb
-    # valeursGlobales.eco_V_carb = conversionCarburantKgToLitres(eco_carburant_masse)
-    # valeursGlobales.eco_C = (
-    #     valeursGlobales.eco_V_carb * 100 / valeursGlobales.distance_totale
+    dict_valeursGlobales["eco_E_carb"] = (
+        dict_valeursGlobales["E_carb"] - dict_valeursGlobales["E_carb_hyb"]
+    )
+    # assert dict_valeursGlobales["eco_E_carb"] != 0
+    # eco_carburant_masse = conversionMJTokWh(PCI) /dict_valeursGlobales["eco_E_carb"]
+    # dict_valeursGlobales["eco_V_carb"] = conversionCarburantKgToLitres(eco_carburant_masse)
+    # dict_valeursGlobales["eco_C"] = (
+    #    dict_valeursGlobales["eco_V_carb"] * 100 /valeursGlobales.distance_totale
     # )
