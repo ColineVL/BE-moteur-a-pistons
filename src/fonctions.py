@@ -1,5 +1,7 @@
 from math import pi
 import matplotlib.pyplot as plt
+import os
+
 from data import rho_carb
 
 
@@ -41,11 +43,10 @@ def conversionSecondeToHeure(seconde):
     return seconde / 3600
 
 
-plt.show()
-
-
-def plot(data, titre, number):
-    if number > 60:
-        fig = plt.figure(number)
-        plt.plot(data, label=titre)
-        plt.legend()
+def plot(data, titre):
+    plt.figure(titre)
+    plt.plot(data, label=titre)
+    plt.legend()
+    # Save fig in png
+    filename = os.path.join("media", titre + ".png")
+    plt.savefig(filename, transparent=False)

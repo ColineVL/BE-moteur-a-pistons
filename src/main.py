@@ -12,7 +12,6 @@ def main():
     evaluationAdaptationSurCycle()
     evaluationPotentielDeceleration()
     valeursGlobales.printAll()
-    plt.show()
 
 
 if __name__ == "__main__":

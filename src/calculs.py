@@ -39,7 +39,7 @@ def calculRegimeMoteur():
         else N_ralenti
         for i in range(nbEtapes)
     ]
-    plot(valeursGlobales.N_mot, "N_mot", 1)
+    plot(valeursGlobales.N_mot, "N_mot")
 
 
 def calculEffortsResistifs():
@@ -52,19 +52,19 @@ def calculEffortsResistifs():
         M_veh * g * cos(theta[i]) * Crr * 0.001 if v_veh[i] != 0 else 0
         for i in range(nbEtapes)
     ]
-    plot(F_rr, "F_rr", 2)
+    plot(F_rr, "F_rr")
     F_meca = [F_meca_cte if v_veh[i] != 0 else 0 for i in range(nbEtapes)]
-    plot(F_meca, "F_meca", 2)
+    plot(F_meca, "F_meca")
     F_pente = [M_veh * g * sin(theta[i]) for i in range(nbEtapes)]
-    plot(F_pente, "F_pente", 2)
+    plot(F_pente, "F_pente")
     F_aero = [
         0.5 * rho_air * conversionKmhToMs(v_veh[i]) ** 2 * SCx for i in range(nbEtapes)
     ]
-    plot(F_aero, "F_aero", 2)
+    plot(F_aero, "F_aero")
     valeursGlobales.F_resistif = [
         F_pente[i] + F_aero[i] + F_rr[i] + F_meca[i] for i in range(nbEtapes)
     ]
-    plot(valeursGlobales.F_resistif, "F_resistif", 2)
+    plot(valeursGlobales.F_resistif, "F_resistif")
 
 
 def calculMasses():
@@ -74,9 +74,9 @@ def calculMasses():
         I * rend_trans * (valeursGlobales.r_moteur_roue[rapport[i]] / R_roue) ** 2
         for i in range(nbEtapes)
     ]
-    plot(M_eq, "M_eq", 3)
+    plot(M_eq, "M_eq")
     valeursGlobales.M = [M_veh + M_eq[i] for i in range(nbEtapes)]
-    plot(valeursGlobales.M, "M", 3)
+    plot(valeursGlobales.M, "M")
 
 
 def calculEffortTotal():
@@ -89,9 +89,9 @@ def calculEffortTotal():
         else 0
         for i in range(nbEtapes)
     ]
-    plot(a, "a", 41)
+    plot(a, "a")
     valeursGlobales.F_tot = [valeursGlobales.M[i] * a[i] for i in range(nbEtapes)]
-    plot(valeursGlobales.F_tot, "F_tot", 42)
+    plot(valeursGlobales.F_tot, "F_tot")
 
 
 def calculCoupleEffectifMoteur():
@@ -101,9 +101,9 @@ def calculCoupleEffectifMoteur():
         valeursGlobales.F_tot[i] + valeursGlobales.F_resistif[i]
         for i in range(nbEtapes)
     ]
-    plot(F_traction, "F_traction", 51)
+    plot(F_traction, "F_traction")
     C_roue = [F_traction[i] * R_roue for i in range(nbEtapes)]
-    plot(C_roue, "C_roue", 52)
+    plot(C_roue, "C_roue")
 
     Ce_mot = [
         C_roue[i] / (valeursGlobales.r_moteur_roue[rapport[i]] * rend_trans)
@@ -111,7 +111,7 @@ def calculCoupleEffectifMoteur():
         else 0
         for i in range(nbEtapes)
     ]
-    plot(Ce_mot, "Ce_mot", 52)
+    plot(Ce_mot, "Ce_mot")
 
     # Puissance en W = vitesse_rotation en rad/s * couple en N.m
     # omega_mot vitesse de rotation du moteur en rad/s
@@ -120,11 +120,11 @@ def calculCoupleEffectifMoteur():
         for i in range(nbEtapes)
     ]
     valeursGlobales.Pe_mot = [Ce_mot[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
-    plot(valeursGlobales.Pe_mot, "Pe_mot", 54)
+    plot(valeursGlobales.Pe_mot, "Pe_mot")
     valeursGlobales.P_traction = [
         F_traction[i] * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
     ]
-    plot(valeursGlobales.P_traction, "P_traction", 54)
+    plot(valeursGlobales.P_traction, "P_traction")
 
 
 def calculRendementEffectifConsoEtCO2():
@@ -133,14 +133,14 @@ def calculRendementEffectifConsoEtCO2():
     q_carb = [
         q_carb_mgcp[i] * n_cyl * valeursGlobales.N_mot[i] / 2 for i in range(nbEtapes)
     ]
-    plot(q_carb, "q_carb", 61)
+    plot(q_carb, "q_carb")
     P_carb = [q_carb[i] * PCI / 1000 for i in range(nbEtapes)]
-    plot(P_carb, "P_carb", 62)
+    plot(P_carb, "P_carb")
     valeursGlobales.rend_e = [
         valeursGlobales.Pe_mot[i] / P_carb[i] if P_carb[i] != 0 else 0
         for i in range(nbEtapes)
     ]
-    plot(valeursGlobales.rend_e, "rend_e", 63)
+    plot(valeursGlobales.rend_e, "rend_e")
     # masse_carburant_totale [kg] masse totale de carburant consommée sur tout le trajet
     masse_carburant_totale = (
         sum(q_carb[i] * (t[i] - t[i - 1]) for i in range(1, nbEtapes)) / 1000000
@@ -175,9 +175,9 @@ def evaluationPotentielDeceleration():
     print("Question 8")
     # Puissance de traction
     P_traction_ap = [max(valeursGlobales.P_traction[i], 0) for i in range(nbEtapes)]
-    plot(P_traction_ap, "P_traction_ap", 81)
+    plot(P_traction_ap, "P_traction_ap")
     P_traction_an = [min(valeursGlobales.P_traction[i], 0) for i in range(nbEtapes)]
-    plot(P_traction_an, "P_traction_an", 82)
+    plot(P_traction_an, "P_traction_an")
 
     # Energie de traction
     valeursGlobales.E_traction_ap = sum(
@@ -206,9 +206,9 @@ def evaluationPotentielDeceleration():
 
     # Economies
     valeursGlobales.eco_E_carb = valeursGlobales.E_carb - valeursGlobales.E_carb_hyb
-    assert valeursGlobales.eco_E_carb != 0
-    eco_carburant_masse = conversionMJTokWh(PCI) / valeursGlobales.eco_E_carb
-    valeursGlobales.eco_V_carb = conversionCarburantKgToLitres(eco_carburant_masse)
-    valeursGlobales.eco_C = (
-        valeursGlobales.eco_V_carb * 100 / valeursGlobales.distance_totale
-    )
+    # assert valeursGlobales.eco_E_carb != 0
+    # eco_carburant_masse = conversionMJTokWh(PCI) / valeursGlobales.eco_E_carb
+    # valeursGlobales.eco_V_carb = conversionCarburantKgToLitres(eco_carburant_masse)
+    # valeursGlobales.eco_C = (
+    #     valeursGlobales.eco_V_carb * 100 / valeursGlobales.distance_totale
+    # )
