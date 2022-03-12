@@ -134,7 +134,11 @@ def calculRendementEffectifConsoEtCO2():
     """6. Calcul du rendement effectif, de la consommation et du CO2"""
     print("Question 6")
     q_carb = [
-        q_carb_mgcp[i] * n_cyl * valeursGlobales.N_mot[i] / 2 for i in range(nbEtapes)
+        q_carb_mgcp[i]
+        * n_cyl
+        * conversionTrParMinToTrParSec(valeursGlobales.N_mot[i])
+        / 2
+        for i in range(nbEtapes)
     ]
     plot(q_carb, "q_carb")
     P_carb = [q_carb[i] * PCI / 1000 for i in range(nbEtapes)]

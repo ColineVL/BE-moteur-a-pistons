@@ -67,6 +67,13 @@ def conversionSecondeToHeure(seconde):
 assert conversionSecondeToHeure(3600) == 1
 
 
+def conversionTrParMinToTrParSec(tourParMin):
+    return tourParMin / 60
+
+
+assert conversionTrParMinToTrParSec(60) == 1
+
+
 def plot(data, titre):
     plt.figure(titre)
     plt.plot(data, label=titre)
