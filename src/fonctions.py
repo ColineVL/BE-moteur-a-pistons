@@ -4,6 +4,11 @@ import os
 
 from data import rho_carb
 
+"""
+Fonctions de conversions.
+Une fonction pour dessiner les tracés temporels et les enregistrer.
+"""
+
 
 def conversionDegreToRadian(angleDegre):
     """Convertit un angle de degré en radian"""

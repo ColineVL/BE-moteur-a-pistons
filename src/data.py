@@ -1,39 +1,39 @@
 """
-Constantes du problème
+Constantes du problème.
 """
 
 """ Véhicule """
-# MVODM (masse à vide en ordre de mission) en kg
+# [kg] MVODM (masse à vide en ordre de mission)
 M_veh = 1420
-# SCx en m²
+# [m²] SCx
 SCx = 0.712
-# Coeff de résistance au roulement des pneus en kg/t
+# [kg/t] Coeff de résistance au roulement des pneus
 Crr = 6.2
-# Rayon de roue en m
+# [m] Rayon de roue
 R_roue = 0.3067
 
 """ Transmission - moteur """
-# Force résistante mécanique en N
+# [N] Force résistante mécanique
 F_meca_cte = 50
-# Inertie des masses en rotation en kg.m²
+# [kg.m²] Inertie des masses en rotation
 I = 0.16
-# Rendement de transmission
+# [-] Rendement de transmission
 rend_trans = 0.8
-# Régime de ralenti en tr/min
+# [tr/min] Régime de ralenti
 N_ralenti = 850
 
 """ Boite de vitesse """
-# V1000 1ère en kmh/h par 1000tr/min
+# [kmh/h par 1000tr/min] V1000 1ère
 V1000_1 = 8.71
-# V1000 2ème en kmh/h par 1000tr/min
+# [kmh/h par 1000tr/min] V1000 2ème
 V1000_2 = 14.91
-# V1000 3ème en kmh/h par 1000tr/min
+# [kmh/h par 1000tr/min] V1000 3ème
 V1000_3 = 23.30
-# V1000 4ème en kmh/h par 1000tr/min
+# [kmh/h par 1000tr/min] V1000 4ème
 V1000_4 = 33.29
-# V1000 5ème en kmh/h par 1000tr/min
+# [kmh/h par 1000tr/min] V1000 5ème
 V1000_5 = 44.36
-# V1000 6ème en kmh/h par 1000tr/min
+# [kmh/h par 1000tr/min] V1000 6ème
 V1000_6 = 57.96
 # On regroupe les vitesses dans un tableau pour simplifier
 dict_V1000 = {
@@ -47,30 +47,30 @@ dict_V1000 = {
 }
 
 """ Autres """
-# Constante de gravitation en m/s²
+# [m/s²] Constante de gravitation
 g = 9.81
-# Densité de l'air en kg/m3
+# [kg/m3] Densité de l'air
 rho_air = 1.2
-# Pouvoir calorifique du carburant en MJ/kg
+# [MJ/kg] Pouvoir calorifique du carburant
 PCI = 42.72
-# Densité du carburant en kg/m3
+# [kg/m3] Densité du carburant
 rho_carb = 834
-# Fraction molaire d'hydrogène du carburant
+# [-] Fraction molaire d'hydrogène du carburant
 Y = 2.052
-# Masse molaire de l'hydrogène en g/mol
+# [g/mol] Masse molaire de l'hydrogène
 M_H = 1
-# Masse molaire du carbone en g/mol
+# [g/mol] Masse molaire du carbone
 M_C = 12
-# Masse molaire de l'oxygène en g/mol
+# [g/mol] Masse molaire de l'oxygène
 M_O = 16
-# Nombre de cylindres du moteur
+# [-] Nombre de cylindres du moteur
 n_cyl = 4
 
 
 """ Pleine charge """
-# N en tr/min
-# C en N.m
-# dict_pleine_charge[N] = C
+# [tr/min] N
+# [N.m] C
+# On aura dict_pleine_charge[N] = C
 dict_pleine_charge = {
     750: 100,
     1000: 122,
