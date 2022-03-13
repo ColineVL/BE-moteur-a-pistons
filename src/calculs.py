@@ -206,7 +206,26 @@ def calculRendementEffectifConsoEtCO2(N_mot, Pe_mot):
 
 def evaluationAdaptationSurCycle(N_mot, Ce_mot):
     """7. Evaluation de l'adaptation moteur / véhicule / boite sur ce cycle"""
-    print("Question 7")
+    plt.figure("courbePleineCharge")
+    plt.xlabel("Régime moteur [tr/min]")
+    plt.ylabel("Couple [N.m]")
+    plt.plot(
+        dict_pleine_charge.keys(),
+        dict_pleine_charge.values(),
+        label="Courbe de pleine charge",
+        marker=".",
+        linestyle="None",
+    )
+
+    # On place les points de fonctionnement moteur utilisés
+    plt.plot(
+        N_mot, Ce_mot, label="Points de fonctionnement", marker=".", linestyle="None"
+    )
+
+    plt.legend()
+    # Save fig in png
+    filename = os.path.join("media", "courbePleineCharge" + ".png")
+    plt.savefig(filename, transparent=False)
 
 
 def evaluationPotentielDeceleration(P_traction, distance_totale):
