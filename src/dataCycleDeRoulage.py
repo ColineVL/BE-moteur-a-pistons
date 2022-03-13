@@ -24,6 +24,10 @@ q_carb_mgcp = [cleanValue(cell.value) for cell in sheet["E"][1:]]
 # rapport [-] : rapport de boite engagé
 # q_carb [mg/cp] : débit de carburant (mg/cp : milligrammes par coup, masse de carburant injectée par cylindre pour 1 cycle thermodynamique)
 
+
+# delta_t [s] Ecart entre deux prises de mesures
+delta_t = t[1] - t[0]
+
 assert len(t) == len(v_veh) == len(pente) == len(rapport) == len(q_carb_mgcp)
 nbEtapes = len(t)
 print(f"Chargé {nbEtapes} lignes du fichier")

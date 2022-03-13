@@ -9,6 +9,8 @@ dict_valeursGlobales = {
         5: 0,
         6: 0,
     },
+    # Rendement effectif du moteur
+    "rend_e": 0,
     # Consommation en carburant sur ce cycle C [L/100km]
     "C": 0,
     # Energie introduite sous forme de carburant E_carb [kW.h]

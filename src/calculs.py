@@ -22,7 +22,7 @@ from data import (
     n_cyl,
     dict_pleine_charge,
 )
-from dataCycleDeRoulage import t, v_veh, pente, rapport, q_carb_mgcp, nbEtapes
+from dataCycleDeRoulage import t, v_veh, pente, rapport, q_carb_mgcp, nbEtapes, delta_t
 from fonctions import *
 
 
@@ -122,7 +122,9 @@ def calculCoupleEffectifMoteur():
         conversionTourParMinuteToRadParSeconde(valeursGlobales.N_mot[i])
         for i in range(nbEtapes)
     ]
-    valeursGlobales.Pe_mot = [Ce_mot[i] * omega_mot[i] / 1000 for i in range(nbEtapes)]
+    valeursGlobales.Pe_mot = [
+        abs(Ce_mot[i]) * omega_mot[i] / 1000 for i in range(nbEtapes)
+    ]
     plot(valeursGlobales.Pe_mot, "Pe_mot")
     valeursGlobales.P_traction = [
         F_traction[i] * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
@@ -143,21 +145,19 @@ def calculRendementEffectifConsoEtCO2():
     plot(q_carb, "q_carb")
     P_carb = [q_carb[i] * PCI / 1000 for i in range(nbEtapes)]
     plot(P_carb, "P_carb")
-    rend_e = [
-        valeursGlobales.Pe_mot[i] / P_carb[i] if P_carb[i] != 0 else 0
-        for i in range(nbEtapes)
-    ]
-    plot(rend_e, "rend_e")
+    dict_valeursGlobales["rend_e"] = sum(valeursGlobales.Pe_mot) / sum(P_carb)
     # masse_carburant_totale [kg] masse totale de carburant consommée sur tout le trajet
+    delta_t = 0.1
     masse_carburant_totale = (
-        sum(q_carb[i] * (t[i] - t[i - 1]) for i in range(1, nbEtapes)) / 1000000
+        sum(q_carb[i] * delta_t for i in range(nbEtapes)) / 1_000_000
     )
     # conso_carburant_totale [litres] conso totale
     conso_carburant_totale = conversionCarburantKgToLitres(masse_carburant_totale)
     # distance_totale [km] distance totale parcourue pendant le trajet
     valeursGlobales.distance_totale = sum(
-        conversionKmhToKms(v_veh[i]) * (t[i] - t[i - 1]) for i in range(1, nbEtapes)
+        conversionKmhToKms(v_veh[i]) * delta_t for i in range(nbEtapes)
     )
+    print(conso_carburant_totale)
     # On convertit en litres aux 100 km
     dict_valeursGlobales["C"] = (
         conso_carburant_totale * 100 / valeursGlobales.distance_totale
@@ -190,12 +190,10 @@ def evaluationPotentielDeceleration():
 
     # Energie de traction
     dict_valeursGlobales["E_traction_ap"] = sum(
-        P_traction_ap[i] * conversionSecondeToHeure(t[i] - t[i - 1])
-        for i in range(1, nbEtapes)
+        P_traction_ap[i] * conversionSecondeToHeure(delta_t) for i in range(nbEtapes)
     )
     dict_valeursGlobales["E_traction_an"] = sum(
-        P_traction_an[i] * conversionSecondeToHeure(t[i] - t[i - 1])
-        for i in range(1, nbEtapes)
+        P_traction_an[i] * conversionSecondeToHeure(delta_t) for i in range(nbEtapes)
     )
 
     # Energie disponible
