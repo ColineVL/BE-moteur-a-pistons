@@ -148,11 +148,11 @@ def calculCoupleEffectifMoteur(F_tot, F_resistif, N_mot):
 
     # [kW] Puissance de traction
     P_traction = [
-        F_traction[i] * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
+        abs(F_traction[i]) * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
     ]
     plot(P_traction, "P_traction [kW]")
 
-    return Pe_mot, P_traction, Ce_mot
+    return Pe_mot, P_traction, Ce_mot, F_traction
 
 
 def calculRendementEffectifConsoEtCO2(N_mot, Pe_mot):
@@ -228,26 +228,30 @@ def evaluationAdaptationSurCycle(N_mot, Ce_mot):
     plt.savefig(filename, transparent=False)
 
 
-def evaluationPotentielDeceleration(P_traction, distance_totale):
+def evaluationPotentielDeceleration(P_traction, distance_totale, F_traction):
     """8. Evaluation du potentiel de récupération d'énergie à la décélération"""
 
     # [kW] Puissance  de  traction lorsque l’effort de traction est positif
-    P_traction_ap = [max(P_traction[i], 0) for i in range(nbEtapes)]
+    P_traction_ap = [
+        P_traction[i] if F_traction[i] >= 0 else 0 for i in range(nbEtapes)
+    ]
     plot(P_traction_ap, "P_traction_ap [kW]")
 
     # [kW] Puissance  de  traction lorsque l’effort de traction est négatif
-    P_traction_an = [min(P_traction[i], 0) for i in range(nbEtapes)]
+    P_traction_an = [
+        P_traction[i] if F_traction[i] <= 0 else 0 for i in range(nbEtapes)
+    ]
     plot(P_traction_an, "P_traction_an [kW]")
 
     # [kW.h] Energie de traction lorsque le conducteur demande un couple positif
     dict_valeursGlobales["E_traction_ap"] = sum(
-        P_traction_ap[i] * conversionSecondeToHeure(delta_t) for i in range(nbEtapes)
-    )
+        P_traction_ap[i] for i in range(nbEtapes)
+    ) * conversionSecondeToHeure(delta_t)
 
     # [kW.h] Energie de traction lorsque le conducteur demande un couple négatif
     dict_valeursGlobales["E_traction_an"] = sum(
-        P_traction_an[i] * conversionSecondeToHeure(delta_t) for i in range(nbEtapes)
-    )
+        P_traction_an[i] for i in range(nbEtapes)
+    ) * conversionSecondeToHeure(delta_t)
 
     # [kW.h] Energie disponible à la roue si l’intégralité de E_traction_an est récupérée
     dict_valeursGlobales["E_traction_elec"] = (
@@ -259,7 +263,7 @@ def evaluationPotentielDeceleration(P_traction, distance_totale):
     )
     # [-] Rendement de traction thermique
     dict_valeursGlobales["rend_traction_therm"] = (
-        dict_valeursGlobales["E_traction_therm"] / dict_valeursGlobales["E_carb"]
+        dict_valeursGlobales["E_traction_ap"] / dict_valeursGlobales["E_carb"]
     )
     # [kW.h] Energie à introduire sous forme de carburant
     dict_valeursGlobales["E_carb_hyb"] = (
@@ -271,17 +275,16 @@ def evaluationPotentielDeceleration(P_traction, distance_totale):
     dict_valeursGlobales["eco_E_carb"] = (
         dict_valeursGlobales["E_carb"] - dict_valeursGlobales["E_carb_hyb"]
     )
-    # FIXME
-    if dict_valeursGlobales["eco_E_carb"] != 0:
-        # [kg] Réduction de consommation de carburant
-        eco_carburant_masse = (
-            conversionMJTokWh(PCI) / dict_valeursGlobales["eco_E_carb"]
-        )
-        # [L] Réduction de consommation de carburant
-        dict_valeursGlobales["eco_V_carb"] = conversionCarburantKgToLitres(
-            eco_carburant_masse
-        )
-        # [L/100km] Réduction de consommation
-        dict_valeursGlobales["eco_C"] = (
-            dict_valeursGlobales["eco_V_carb"] * 100 / distance_totale
-        )
+
+    # [kg] Réduction de consommation de carburant
+    eco_carburant_masse = dict_valeursGlobales["eco_E_carb"] / conversionMJTokWh(PCI)
+
+    # [L] Réduction de consommation de carburant
+    dict_valeursGlobales["eco_V_carb"] = conversionCarburantKgToLitres(
+        eco_carburant_masse
+    )
+
+    # [L/100km] Réduction de consommation
+    dict_valeursGlobales["eco_C"] = (
+        dict_valeursGlobales["eco_V_carb"] * 100 / distance_totale
+    )
