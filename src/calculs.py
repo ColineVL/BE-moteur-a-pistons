@@ -103,8 +103,7 @@ def calculEffortTotal(M):
     """4. Calcul de l'effort total"""
     # [m.s-2] Accélération du véhicule
     a = [
-        (conversionKmhToMs(v_veh[i]) - conversionKmhToMs(v_veh[i - 1]))
-        / (t[i] - t[i - 1])
+        (conversionKmhToMs(v_veh[i]) - conversionKmhToMs(v_veh[i - 1])) / delta_t
         if i != 0
         else 0
         for i in range(nbEtapes)
