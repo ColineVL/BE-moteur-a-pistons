@@ -41,13 +41,3 @@ dict_valeursGlobales = {
 def printAll():
     for key, value in dict_valeursGlobales.items():
         print(f"{key} : {value}")
-
-
-# Quelques valeurs réutilisées entre les questions
-M = []
-F_tot = []
-F_resistif = []
-N_mot = []
-Pe_mot = []
-P_traction = []
-distance_totale = 0
