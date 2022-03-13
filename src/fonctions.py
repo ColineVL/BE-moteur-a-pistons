@@ -1,6 +1,7 @@
 from math import pi
 import matplotlib.pyplot as plt
 import os
+from parse import parse
 
 from data import rho_carb
 
@@ -84,5 +85,6 @@ def plot(data, titre):
     plt.plot(data, label=titre)
     plt.legend()
     # Save fig in png
-    filename = os.path.join("media", titre + ".png")
+    nomFichier = parse("{} [{}]", titre)[0]
+    filename = os.path.join("media", nomFichier + ".png")
     plt.savefig(filename, transparent=False)

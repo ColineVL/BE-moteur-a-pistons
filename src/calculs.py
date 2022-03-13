@@ -43,7 +43,7 @@ def calculRegimeMoteur():
         else N_ralenti
         for i in range(nbEtapes)
     ]
-    plot(N_mot, "N_mot")
+    plot(N_mot, "N_mot [tr/min]")
 
     return N_mot
 
@@ -58,25 +58,25 @@ def calculEffortsResistifs():
         M_veh * g * cos(theta[i]) * Crr * 0.001 if v_veh[i] != 0 else 0
         for i in range(nbEtapes)
     ]
-    plot(F_rr, "F_rr")
+    plot(F_rr, "F_rr [N]")
 
     # [N] Effort résistif mécanique
     F_meca = [F_meca_cte if v_veh[i] != 0 else 0 for i in range(nbEtapes)]
-    plot(F_meca, "F_meca")
+    plot(F_meca, "F_meca [N]")
 
     # [N] Effort résistif de pente
     F_pente = [M_veh * g * sin(theta[i]) for i in range(nbEtapes)]
-    plot(F_pente, "F_pente")
+    plot(F_pente, "F_pente [N]")
 
     # [N] Effort résistif aérodynamique
     F_aero = [
         0.5 * rho_air * conversionKmhToMs(v_veh[i]) ** 2 * SCx for i in range(nbEtapes)
     ]
-    plot(F_aero, "F_aero")
+    plot(F_aero, "F_aero [N]")
 
     # [N] Effort résistif total
     F_resistif = [F_pente[i] + F_aero[i] + F_rr[i] + F_meca[i] for i in range(nbEtapes)]
-    plot(F_resistif, "F_resistif")
+    plot(F_resistif, "F_resistif [N]")
 
     return F_resistif
 
@@ -90,11 +90,11 @@ def calculMasses():
         * (dict_valeursGlobales["r_moteur_roue"][rapport[i]] / R_roue) ** 2
         for i in range(nbEtapes)
     ]
-    plot(M_eq, "M_eq")
+    plot(M_eq, "M_eq [kg]")
 
     # [kg] Masse totale à entraîner
     M = [M_veh + M_eq[i] for i in range(nbEtapes)]
-    plot(M, "M")
+    plot(M, "M [kg]")
 
     return M
 
@@ -109,11 +109,11 @@ def calculEffortTotal(M):
         else 0
         for i in range(nbEtapes)
     ]
-    plot(a, "a")
+    plot(a, "a [m.s-2]")
 
     # [N] Effort total
     F_tot = [M[i] * a[i] for i in range(nbEtapes)]
-    plot(F_tot, "F_tot")
+    plot(F_tot, "F_tot [N]")
 
     return F_tot
 
@@ -122,11 +122,11 @@ def calculCoupleEffectifMoteur(F_tot, F_resistif, N_mot):
     """5. Calcul du couple effectif moteur"""
     # [N] Besoin en effort de traction
     F_traction = [F_tot[i] + F_resistif[i] for i in range(nbEtapes)]
-    plot(F_traction, "F_traction")
+    plot(F_traction, "F_traction [N]")
 
     # [N.m] Couple nécessaire à la roue
     C_roue = [F_traction[i] * R_roue for i in range(nbEtapes)]
-    plot(C_roue, "C_roue")
+    plot(C_roue, "C_roue [N.m]")
 
     # [N.m] Couple effectif moteur nécessaire
     Ce_mot = [
@@ -135,7 +135,7 @@ def calculCoupleEffectifMoteur(F_tot, F_resistif, N_mot):
         else 0
         for i in range(nbEtapes)
     ]
-    plot(Ce_mot, "Ce_mot")
+    plot(Ce_mot, "Ce_mot [N.m]")
 
     # [rad/s] Vitesse de rotation du moteur
     omega_mot = [
@@ -144,13 +144,13 @@ def calculCoupleEffectifMoteur(F_tot, F_resistif, N_mot):
 
     # [kW] Puissance effective moteur
     Pe_mot = [abs(Ce_mot[i]) * omega_mot[i] / 1000 for i in range(nbEtapes)]
-    plot(Pe_mot, "Pe_mot")
+    plot(Pe_mot, "Pe_mot [kW]")
 
     # [kW] Puissance de traction
     P_traction = [
         F_traction[i] * conversionKmhToMs(v_veh[i]) / 1000 for i in range(nbEtapes)
     ]
-    plot(P_traction, "P_traction")
+    plot(P_traction, "P_traction [kW]")
 
     return Pe_mot, P_traction, Ce_mot
 
@@ -162,11 +162,11 @@ def calculRendementEffectifConsoEtCO2(N_mot, Pe_mot):
         q_carb_mgcp[i] * n_cyl * conversionTrParMinToTrParSec(N_mot[i]) / 2
         for i in range(nbEtapes)
     ]
-    plot(q_carb, "q_carb")
+    plot(q_carb, "q_carb [mg/s]")
 
     # [kW] Puissance chimique introduite
     P_carb = [q_carb[i] * PCI / 1000 for i in range(nbEtapes)]
-    plot(P_carb, "P_carb")
+    plot(P_carb, "P_carb [kW]")
 
     # [-] Rendement effectif du moteur
     dict_valeursGlobales["rend_e"] = sum(Pe_mot) / sum(P_carb)
@@ -233,11 +233,11 @@ def evaluationPotentielDeceleration(P_traction, distance_totale):
 
     # [kW] Puissance  de  traction lorsque l’effort de traction est positif
     P_traction_ap = [max(P_traction[i], 0) for i in range(nbEtapes)]
-    plot(P_traction_ap, "P_traction_ap")
+    plot(P_traction_ap, "P_traction_ap [kW]")
 
     # [kW] Puissance  de  traction lorsque l’effort de traction est négatif
     P_traction_an = [min(P_traction[i], 0) for i in range(nbEtapes)]
-    plot(P_traction_an, "P_traction_an")
+    plot(P_traction_an, "P_traction_an [kW]")
 
     # [kW.h] Energie de traction lorsque le conducteur demande un couple positif
     dict_valeursGlobales["E_traction_ap"] = sum(
